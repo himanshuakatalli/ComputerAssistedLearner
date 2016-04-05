@@ -25,6 +25,7 @@ char* generateQuestion(Data *pdatObject,enum DifficultyLevel obDifficulty);
 int evaluateAnswer(int inputAnswer, Data *pdatObject);
 int generateRandomInRange(int range);
 enum DifficultyLevel askDifficulty();
+int postGameSessionComplete();
 
 /*************
 Main Function
@@ -35,14 +36,33 @@ int main(){
   Displays initial instructions for using the program
   ***************************************************/
   displayBanner();
-  clrscr();
   obDifficulty = askDifficulty();
-  playGame(obDifficulty);
+  while(1) {
+    playGame(obDifficulty);
+    if(!postGameSessionComplete()) {
+      break;
+    }
+  }
 }
 
 /*******************************
 Function definitions starts here
 *******************************/
+int postGameSessionComplete() {
+  size_t option;
+  puts("------------------------------------------------------------------------------------------------------------------");
+  puts("Your session is completed. You can find your results in report generated in the same folder as that of the program");
+  puts("------------------------------------------------------------------------------------------------------------------");
+  puts("If you wish to quit enter 0 else enter 1");
+  x:scanf("%zu",&option);
+  if(option != 0 && option != 1) {
+    puts ("Wrong option given please try again ...... ");
+    goto x;
+  }
+  else if (option == 0) return 0;
+  else if (option == 1) return 1;
+}
+
 void displayBanner(){
   puts("-------------------------------------");
   puts("Welcome to the Game of Mathematics : ");
@@ -60,13 +80,21 @@ void playGame(enum DifficultyLevel obDifficulty){
   int result[10];
   float inputAnswer;
   char *question, *rem, inpAns[5];
+  // FILE *fResult;
+  // if((fResult = fopen("result.txt","w+"))) {
+  //   puts ("Done");
+  // } else {
+  //   puts ("No");
+  // }
 
   quesNumber = 1;
 
-  while(quesNumber < NO_OF_QUES){
+  while(quesNumber <= NO_OF_QUES){
     correctAnswerFlag = 0;
     quitFlag = 0;
     question = generateQuestion(&datObject,obDifficulty);
+    // fprintf(fResult,"%s%zu %s\n","Ques - ",quesNumber,question);
+    // fprintf(fResult,"%s%d\n","Correct Answer = ",datObject.result);
     printf("\n%s",question);
     while(correctAnswerFlag == 0){
       printf("%s","Ans = ");
@@ -83,7 +111,9 @@ void playGame(enum DifficultyLevel obDifficulty){
           correctAnswerFlag = 0;
         }
       }
+
     }
+    quesNumber++;
     if(quitFlag == 1){
       break;
     }
